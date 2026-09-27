@@ -4,10 +4,11 @@ usando la API gratuita de Gemini, y lo guarda en _posts/ listo para revisar.
 
 Variables de entorno:
   GEMINI_API_KEY     (obligatoria) tu clave gratuita de https://aistudio.google.com/
-  GEMINI_MODEL       (opcional) por defecto "gemini-flash-latest".
-                      Si el script falla con "modelo no encontrado", entra en
+  GEMINI_MODEL       (opcional) por defecto "gemini-3.1-flash-lite" (gratis, pensado
+                      para tareas frecuentes y económicas). Si el script falla con
+                      "modelo no encontrado", entra en
                       https://ai.google.dev/gemini-api/docs/models y pon aquí
-                      el nombre exacto del modelo "Flash" actual.
+                      el nombre exacto del modelo actual.
   SITE_NAME          (opcional) nombre de tu web, para dar contexto al prompt.
   SITE_NICHE         (opcional) descripción de una frase de tu nicho. Se usa para que la
                       IA proponga temas nuevos ella sola cuando temas.csv se quede vacío.
@@ -27,18 +28,26 @@ import unicodedata
 
 import requests
 
+def _opcional(nombre_var: str, valor_por_defecto: str) -> str:
+    """Como os.environ.get, pero además trata una variable VACÍA igual que si no
+    existiera. Un secret de GitHub que dejas sin rellenar llega como cadena vacía
+    (no como ausente), así que sin esto el valor por defecto nunca se usaría."""
+    valor = os.environ.get(nombre_var)
+    return valor if valor else valor_por_defecto
+
+
 TEMAS_CSV = "temas.csv"
 POSTS_DIR = "_posts"
 
-SITE_NAME = os.environ.get("SITE_NAME", "Ahorro Eficiente")
-SITE_NICHE = os.environ.get(
+SITE_NAME = _opcional("SITE_NAME", "Ahorro Eficiente")
+SITE_NICHE = _opcional(
     "SITE_NICHE",
     "ahorro energético y eficiencia en el hogar para viviendas en España: "
     "factura de la luz y el gas, electrodomésticos eficientes, domótica, "
     "autoconsumo solar y consejos prácticos de ahorro",
 )
-CONTENT_LANGUAGE = os.environ.get("CONTENT_LANGUAGE", "es")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+CONTENT_LANGUAGE = _opcional("CONTENT_LANGUAGE", "es")
+GEMINI_MODEL = _opcional("GEMINI_MODEL", "gemini-3.1-flash-lite")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 

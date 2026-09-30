@@ -1,6 +1,11 @@
 title: "Ahorro Eficiente"
-description: "Guías y comparativas para ahorrar en la factura de la luz, el gas y el consumo del hogar"
+description: "Guías y comparativas para ahorrar en la factura de la luz, el gas y el consumo del hogar — now also in English"
 theme: minima
+
+collections:
+  posts_en:
+    output: true
+    permalink: /en/:year/:month/:day/:title/
 
 plugins:
   - jekyll-sitemap
@@ -9,6 +14,6 @@ plugins:
 permalink: /:year/:month/:day/:title/
 
 # Cambia el título y la descripción de arriba cuando quieras: es solo texto, sin coste ni riesgo.
-author: "Tu nombre"
+author: "Ignacio"
 # twitter_username: tuusuario
 # github_username:  tuusuario

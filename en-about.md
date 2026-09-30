@@ -6,11 +6,10 @@ permalink: /en/about/
 
 [Versión en español](/sobre/)
 
-*Replace this with something real about you or your project: why this site exists,
-what experience or interest you have in the topic, and how people can reach you.*
+This site is run by Ignacio. It exists to explain home electricity use and real energy
+savings clearly and without filler, instead of the generic advice you find everywhere.
 
-Sites that either say "an unsupervised AI writes this" or say nothing about who's
-behind them tend to do worst with both Google and readers. A couple of honest
-sentences here are worth more than a thousand articles.
+Articles are drafted with AI assistance and reviewed before publishing — if you spot
+an error or something that doesn't add up, let me know.
 
-**Contact:** [your email]
+**Contact:** nachojimenezcor@gmail.com

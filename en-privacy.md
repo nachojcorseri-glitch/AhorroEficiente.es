@@ -6,12 +6,12 @@ permalink: /en/privacy/
 
 [Versión en español](/privacidad/)
 
-*Starting template — replace the bracketed parts with your real details before this
-goes live. This isn't legal advice.*
+*This covers the basics for a site that's just getting started. If the business grows,
+it's worth having it reviewed by a professional.*
 
-**Last updated:** [date]
+**Last updated:** September 30, 2026
 
-**Site owner:** [your name or project name] — you can reach me at [your email]
+**Site owner:** Ignacio — you can reach me at nachojimenezcor@gmail.com
 
 ## What data is collected
 
@@ -33,8 +33,8 @@ https://policies.google.com/technologies/partner-sites
 ## Your rights (GDPR / applicable privacy law)
 
 Depending on where you live, you may have the right to access, correct, or delete
-your data, and to object to its processing, by writing to [your email].
+your data, and to object to its processing, by writing to nachojimenezcor@gmail.com.
 
 ## Contact
 
-For any question about this policy: [your email].
+For any question about this policy: nachojimenezcor@gmail.com.

@@ -4,8 +4,11 @@ title: "Sobre este sitio"
 permalink: /sobre/
 ---
 
-*Sustituye este texto por algo real sobre ti o tu proyecto: por qué existe esta web, qué experiencia o interés tienes en el tema, y cómo os podéis poner en contacto.*
+Este sitio lo lleva Ignacio. Nace con una idea sencilla: explicar de forma clara y sin
+relleno cómo funciona el consumo eléctrico en casa y qué merece realmente la pena para
+ahorrar, en vez de dar consejos genéricos que se leen en cualquier sitio.
 
-Los sitios que solo dicen "esto lo escribe una IA sin supervisión" o no dicen nada de nada son, precisamente, los que peor le caen a Google y a los lectores. Un par de frases honestas aquí valen más que mil artículos.
+Los artículos se preparan con ayuda de IA y se revisan antes de publicarse — si detectas
+algún error o un dato que no cuadra, házmelo saber.
 
-**Contacto:** [tu email]
+**Contacto:** nachojimenezcor@gmail.com

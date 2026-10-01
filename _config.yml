@@ -13,7 +13,17 @@ plugins:
 
 permalink: /:year/:month/:day/:title/
 
+# Archivos del repositorio que NO son parte de la web pública: Jekyll no debe
+# convertirlos en páginas ni listarlos en la navegación.
+exclude:
+  - PROMPT-MAESTRO-NICHO.md
+  - README.md
+  - generar_articulo.py
+  - requirements.txt
+  - temas_es.csv
+  - temas_en.csv
+
 # Cambia el título y la descripción de arriba cuando quieras: es solo texto, sin coste ni riesgo.
-author: "Ignacio"
+author: "Tu nombre"
 # twitter_username: tuusuario
 # github_username:  tuusuario

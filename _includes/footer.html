@@ -1,0 +1,23 @@
+<footer class="site-footer h-card">
+  <data class="u-url" href="{{ '/' | relative_url }}"></data>
+  <div class="wrapper">
+    {%- assign is_en = false -%}
+    {%- if page.url contains '/en/' -%}{%- assign is_en = true -%}{%- endif -%}
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <p>&copy; {{ 'now' | date: "%Y" }} {{ site.title }} — Ignacio</p>
+      </div>
+      <div class="footer-col footer-col-2">
+        {%- if is_en -%}
+          <p><a href="{{ '/en/about/' | relative_url }}">About</a> · <a href="{{ '/en/privacy/' | relative_url }}">Privacy Policy</a> · <a href="{{ '/feed.xml' | relative_url }}">RSS</a></p>
+        {%- else -%}
+          <p><a href="{{ '/sobre/' | relative_url }}">Sobre este sitio</a> · <a href="{{ '/privacidad/' | relative_url }}">Política de privacidad</a> · <a href="{{ '/feed.xml' | relative_url }}">RSS</a></p>
+        {%- endif -%}
+      </div>
+      <div class="footer-col footer-col-3">
+        <p>{{ site.description | escape }}</p>
+      </div>
+    </div>
+  </div>
+</footer>

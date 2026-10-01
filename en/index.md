@@ -4,11 +4,12 @@ title: Home
 permalink: /en/
 ---
 
-[Versión en español](/)
+<p class="site-intro">Practical, no-nonsense guides on home energy costs and savings —
+how much things actually cost to run, and what's worth doing about it.</p>
 
-Practical, no-nonsense guides on home energy costs and savings — how much things
-actually cost to run, and what's worth doing about it.
+<p><a class="lang-link" href="/">🇪🇸 Leer este sitio en español</a></p>
 
+<div class="home">
 <ul class="post-list">
 {% assign sorted_posts = site.posts_en | sort: 'date' | reverse %}
 {% for post in sorted_posts %}
@@ -20,3 +21,4 @@ actually cost to run, and what's worth doing about it.
   </li>
 {% endfor %}
 </ul>
+</div>

@@ -4,21 +4,33 @@ title: Home
 permalink: /en/
 ---
 
-<p class="site-intro">Practical, no-nonsense guides on home energy costs and savings —
-how much things actually cost to run, and what's worth doing about it.</p>
+<section class="hero">
+  <div class="hero-text">
+    <h1>Lower your power bill without the guesswork</h1>
+    <p class="site-intro">Clear, no-filler guides on home energy costs — appliances, heating and cooling, smart home gear, and solar.</p>
+    <a class="lang-link" href="/">🇪🇸 Leer este sitio en español</a>
+  </div>
+  <div class="hero-icon">{% include icon.html name="house" %}</div>
+</section>
 
-<p><a class="lang-link" href="/">🇪🇸 Leer este sitio en español</a></p>
+<div class="topics">
+  <span class="topic-badge">{% include icon.html name="gauge" %}Bills &amp; Rates</span>
+  <span class="topic-badge">{% include icon.html name="plug" %}Appliances</span>
+  <span class="topic-badge">{% include icon.html name="sun" %}Solar</span>
+  <span class="topic-badge">{% include icon.html name="bulb" %}Smart Home</span>
+</div>
 
-<div class="home">
+<h2 class="section-title">Latest articles</h2>
 <ul class="post-list">
 {% assign sorted_posts = site.posts_en | sort: 'date' | reverse %}
 {% for post in sorted_posts %}
-  <li>
-    <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-    <h3>
-      <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-    </h3>
+  <li class="post-card">
+    <span class="post-card-icon">{% include icon.html name=post.icon | default: "house" %}</span>
+    <div class="post-card-body">
+      <span class="post-meta">{{ post.date | date: "%d %b %Y" }}</span>
+      <h3><a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
+      <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 28 }}</p>
+    </div>
   </li>
 {% endfor %}
 </ul>
-</div>

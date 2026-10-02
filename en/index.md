@@ -25,7 +25,7 @@ permalink: /en/
 {% assign sorted_posts = site.posts_en | sort: 'date' | reverse %}
 {% for post in sorted_posts %}
   <li class="post-card">
-    <span class="post-card-icon">{% include icon.html name=post.icon | default: "house" %}</span>
+    <span class="post-card-icon">{% include icon.html name=post.icon %}</span>
     <div class="post-card-body">
       <span class="post-meta">{{ post.date | date: "%d %b %Y" }}</span>
       <h3><a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>

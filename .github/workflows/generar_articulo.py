@@ -61,6 +61,34 @@ IDIOMAS = {
 }
 
 
+CATEGORIAS = [
+    ("tarifas", "gauge", [
+        "tarifa", "factura", "pvpc", "potencia contratada", "discriminación horaria",
+        "bono social", "bill", "rate", "meter",
+    ]),
+    ("electrodomesticos", "plug", [
+        "electrodoméstico", "frigorífico", "lavadora", "lavavajillas", "congelador",
+        "aire acondicionado", "refrigerator", "freezer", "air conditioner", "fan",
+        "appliance", "gaming pc",
+    ]),
+    ("solar", "sun", ["solar", "autoconsumo", "placas", "off-grid", "off grid"]),
+    ("domotica", "bulb", [
+        "enchufe inteligente", "termostato", "domótica", "smart plug", "smart thermostat",
+        "coche eléctrico", "electric car", "heat pump", "bomba de calor",
+    ]),
+]
+
+
+def categorizar(titulo: str, palabra_clave: str):
+    """Elige categoría e icono para un artículo según su título/palabra clave,
+    con una categoría por defecto si no coincide con ninguna conocida."""
+    texto = f"{titulo} {palabra_clave}".lower()
+    for slug, icono, palabras in CATEGORIAS:
+        if any(p in texto for p in palabras):
+            return slug, icono
+    return "ahorro", "house"
+
+
 def slugify(texto: str) -> str:
     texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode()
     texto = re.sub(r"[^a-zA-Z0-9\s-]", "", texto).strip().lower()
@@ -190,12 +218,15 @@ def procesar_idioma(codigo: str, cfg: dict):
     slug = slugify(titulo) or "articulo"
     ruta = os.path.join(cfg["posts_dir"], f"{hoy}-{slug}.md")
 
+    categoria_slug, categoria_icono = categorizar(titulo, palabra_clave)
     titulo_yaml = titulo.replace('"', "'")
     front_matter = (
         "---\n"
         "layout: post\n"
         f'title: "{titulo_yaml}"\n'
         f"date: {hoy} 09:00:00 +0200\n"
+        f"categories: [{categoria_slug}]\n"
+        f"icon: {categoria_icono}\n"
         "---\n\n"
     )
 
@@ -243,9 +274,6 @@ def main():
     escribir_salida_github("hubo_contenido", "si")
     print("Resumen:", resumen)
 
-
-if __name__ == "__main__":
-    main()
 
 if __name__ == "__main__":
     main()

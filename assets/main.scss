@@ -217,3 +217,117 @@ $card-shadow-hover:  0 6px 18px rgba(27, 122, 77, 0.12);
   border-bottom: 3px solid $brand-color-light;
   padding-bottom: 10px;
 }
+
+
+// --- Calculadora interactiva ---
+
+.calc-card {
+  background: $background-color;
+  border: 1px solid $brand-color-light;
+  border-radius: 16px;
+  box-shadow: $card-shadow;
+  padding: 28px;
+  max-width: 480px;
+}
+
+.calc-field {
+  margin-bottom: 18px;
+}
+
+.calc-field label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.calc-card select,
+.calc-card input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid $grey-color-light;
+  border-radius: 8px;
+  background: #fff;
+  color: $text-color;
+  box-sizing: border-box;
+}
+
+.calc-card select:focus,
+.calc-card input[type="number"]:focus {
+  outline: none;
+  border-color: $brand-color;
+}
+
+.calc-hint {
+  font-size: 13px;
+  color: $grey-color;
+  margin: 6px 0 0;
+}
+
+.calc-result {
+  display: flex;
+  gap: 10px;
+  margin: 22px 0 16px;
+  text-align: center;
+}
+
+.calc-result > div {
+  flex: 1;
+  background: $brand-color-light;
+  border-radius: 10px;
+  padding: 14px 6px;
+}
+
+.calc-result span {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: $grey-color;
+  margin-bottom: 4px;
+}
+
+.calc-result strong {
+  font-size: 19px;
+  color: $brand-color;
+}
+
+@media screen and (max-width: 500px) {
+  .calc-result { gap: 6px; }
+  .calc-result strong { font-size: 16px; }
+}
+
+// --- CTA de la calculadora en la portada ---
+
+.calc-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: $accent-color-light;
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-bottom: 36px;
+}
+
+.calc-cta .icon {
+  width: 32px;
+  height: 32px;
+  color: $accent-color;
+  flex: 0 0 auto;
+}
+
+.calc-cta-text { flex: 1 1 auto; }
+
+.calc-cta strong { display: block; font-size: 17px; }
+
+.calc-cta a.button {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 8px 18px;
+  background: $accent-color;
+  color: #fff !important;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}

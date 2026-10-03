@@ -19,6 +19,14 @@ title: Inicio
   <span class="topic-badge">{% include icon.html name="bulb" %}Domótica</span>
 </div>
 
+<div class="calc-cta">
+  {% include icon.html name="gauge" %}
+  <div class="calc-cta-text">
+    <strong>¿Cuánto gasta realmente tu frigorífico, tu aire acondicionado o cualquier aparato?</strong>
+    <a class="button" href="/calculadora/">Pruébalo en la calculadora →</a>
+  </div>
+</div>
+
 <h2 class="section-title">Últimos artículos</h2>
 <ul class="post-list">
 {% assign sorted_posts = site.posts | sort: 'date' | reverse %}

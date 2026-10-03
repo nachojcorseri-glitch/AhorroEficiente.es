@@ -1,22 +1,18 @@
 """
-Genera UN artículo nuevo a partir del primer tema "pendiente" en temas.csv,
-usando la API gratuita de Gemini, y lo guarda en _posts/ listo para revisar.
+Genera artículos nuevos automáticamente, en español e inglés, a partir de las colas
+temas_es.csv / temas_en.csv, usando la API gratuita de Gemini, y los deja en
+_posts/ y _posts_en/ listos para revisar. Un fallo en un idioma no bloquea al otro.
 
 Variables de entorno:
-  GEMINI_API_KEY     (obligatoria) tu clave gratuita de https://aistudio.google.com/
-  GEMINI_MODEL       (opcional) por defecto "gemini-3.1-flash-lite" (gratis, pensado
-                      para tareas frecuentes y económicas). Si el script falla con
-                      "modelo no encontrado", entra en
-                      https://ai.google.dev/gemini-api/docs/models y pon aquí
-                      el nombre exacto del modelo actual.
-  SITE_NAME          (opcional) nombre de tu web, para dar contexto al prompt.
-  SITE_NICHE         (opcional) descripción de una frase de tu nicho. Se usa para que la
-                      IA proponga temas nuevos ella sola cuando temas.csv se quede vacío.
-  CONTENT_LANGUAGE   (opcional) "es" (por defecto) o "en".
+  GEMINI_API_KEY   (obligatoria) tu clave gratuita de https://aistudio.google.com/
+  GEMINI_MODEL     (opcional) por defecto "gemini-3.1-flash-lite".
+  PEXELS_API_KEY   (opcional) tu clave gratuita de https://www.pexels.com/api/ —
+                    sin ella, los artículos se generan igual, solo que sin imagen.
+  SITE_NAME_ES / SITE_NICHE_ES   (opcionales) contexto para el lado español.
+  SITE_NAME_EN / SITE_NICHE_EN   (opcionales) contexto para el lado inglés.
 
-Si no queda ningún tema "pendiente" en temas.csv, el script le pide a la IA que
-proponga temas nuevos automáticamente (a partir de SITE_NICHE) antes de rendirse,
-para que la cola nunca se quede seca sin que tengas que pensar tú los títulos.
+Si a un idioma se le acaban los temas "pendiente", el script le pide más ideas a la
+IA automáticamente antes de rendirse con ese idioma.
 """
 
 import csv
@@ -28,27 +24,80 @@ import unicodedata
 
 import requests
 
+
 def _opcional(nombre_var: str, valor_por_defecto: str) -> str:
-    """Como os.environ.get, pero además trata una variable VACÍA igual que si no
-    existiera. Un secret de GitHub que dejas sin rellenar llega como cadena vacía
-    (no como ausente), así que sin esto el valor por defecto nunca se usaría."""
+    """Como os.environ.get, pero trata una variable VACÍA igual que si no existiera
+    (un secret de GitHub sin rellenar llega como cadena vacía, no como ausente)."""
     valor = os.environ.get(nombre_var)
     return valor if valor else valor_por_defecto
 
 
-TEMAS_CSV = "temas.csv"
-POSTS_DIR = "_posts"
-
-SITE_NAME = _opcional("SITE_NAME", "Ahorro Eficiente")
-SITE_NICHE = _opcional(
-    "SITE_NICHE",
-    "ahorro energético y eficiencia en el hogar para viviendas en España: "
-    "factura de la luz y el gas, electrodomésticos eficientes, domótica, "
-    "autoconsumo solar y consejos prácticos de ahorro",
-)
-CONTENT_LANGUAGE = _opcional("CONTENT_LANGUAGE", "es")
-GEMINI_MODEL = _opcional("GEMINI_MODEL", "gemini-3.1-flash-lite")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_MODEL = _opcional("GEMINI_MODEL", "gemini-3.1-flash-lite")
+PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY")  # opcional: sin ella, sin imagen, sin fallo
+
+IMAGEN_QUERIES = {
+    "tarifas": "electricity meter",
+    "electrodomesticos": "home appliances",
+    "solar": "solar panels house",
+    "domotica": "smart home",
+    "ahorro": "energy saving light bulb",
+}
+
+IDIOMAS = {
+    "es": {
+        "temas_csv": "temas_es.csv",
+        "posts_dir": "_posts",
+        "site_name": _opcional("SITE_NAME_ES", "Ahorro Eficiente"),
+        "site_niche": _opcional(
+            "SITE_NICHE_ES",
+            "ahorro energético y eficiencia en el hogar para hogares hispanohablantes "
+            "(España y Latinoamérica): factura de la luz y el gas, electrodomésticos "
+            "eficientes, domótica, autoconsumo solar y consejos prácticos de ahorro",
+        ),
+        "idioma_humano": "español",
+    },
+    "en": {
+        "temas_csv": "temas_en.csv",
+        "posts_dir": "_posts_en",
+        "site_name": _opcional("SITE_NAME_EN", "Ahorro Eficiente"),
+        "site_niche": _opcional(
+            "SITE_NICHE_EN",
+            "home energy costs and savings for a worldwide English-speaking audience: "
+            "appliance power usage, heating and cooling costs, smart home devices, "
+            "off-grid power and DIY energy efficiency",
+        ),
+        "idioma_humano": "English",
+    },
+}
+
+
+CATEGORIAS = [
+    ("tarifas", "gauge", [
+        "tarifa", "factura", "pvpc", "potencia contratada", "discriminación horaria",
+        "bono social", "bill", "rate", "meter",
+    ]),
+    ("electrodomesticos", "plug", [
+        "electrodoméstico", "frigorífico", "lavadora", "lavavajillas", "congelador",
+        "aire acondicionado", "refrigerator", "freezer", "air conditioner", "fan",
+        "appliance", "gaming pc",
+    ]),
+    ("solar", "sun", ["solar", "autoconsumo", "placas", "off-grid", "off grid"]),
+    ("domotica", "bulb", [
+        "enchufe inteligente", "termostato", "domótica", "smart plug", "smart thermostat",
+        "coche eléctrico", "electric car", "heat pump", "bomba de calor",
+    ]),
+]
+
+
+def categorizar(titulo: str, palabra_clave: str):
+    """Elige categoría e icono para un artículo según su título/palabra clave,
+    con una categoría por defecto si no coincide con ninguna conocida."""
+    texto = f"{titulo} {palabra_clave}".lower()
+    for slug, icono, palabras in CATEGORIAS:
+        if any(p in texto for p in palabras):
+            return slug, icono
+    return "ahorro", "house"
 
 
 def slugify(texto: str) -> str:
@@ -57,44 +106,22 @@ def slugify(texto: str) -> str:
     return re.sub(r"\s+", "-", texto)[:60].strip("-")
 
 
-def leer_temas():
-    with open(TEMAS_CSV, newline="", encoding="utf-8") as f:
+def leer_temas(ruta_csv: str):
+    with open(ruta_csv, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
-def guardar_temas(temas):
-    with open(TEMAS_CSV, "w", newline="", encoding="utf-8") as f:
+def guardar_temas(ruta_csv: str, temas):
+    with open(ruta_csv, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=["titulo", "palabra_clave", "estado"])
         writer.writeheader()
         writer.writerows(temas)
 
 
-def construir_prompt(titulo: str, palabra_clave: str) -> str:
-    idioma = "español" if CONTENT_LANGUAGE == "es" else "English"
-    return f"""Actúa como redactor experto y honesto para {SITE_NAME}.
-
-Escribe un artículo completo en {idioma} sobre: "{titulo}"
-Palabra clave objetivo: "{palabra_clave}"
-
-Requisitos:
-- Entre 900 y 1300 palabras.
-- Tono claro y cercano, sin relleno genérico ni frases vacías tipo "en el mundo actual".
-- Aporta ejemplos o cifras concretas SOLO si son razonables y generales; si no estás
-  seguro de un dato, exprésalo en términos generales en vez de inventarlo.
-- Estructura en Markdown: un H1 al principio, varios H2/H3, listas cuando ayuden,
-  y una conclusión práctica.
-- Si el tema toca dinero, salud o decisiones legales, incluye un aviso breve de que
-  es información general y no asesoramiento profesional individualizado.
-- No repitas el título tal cual dentro del cuerpo como si fuera un H2.
-
-Devuelve SOLO el Markdown del artículo, sin explicaciones antes ni después."""
-
-
 def llamar_gemini(prompt: str) -> str:
     if not GEMINI_API_KEY:
-        sys.exit(
-            "Falta la variable de entorno GEMINI_API_KEY. "
-            "Añádela como 'secret' en GitHub (ver README.md)."
+        raise RuntimeError(
+            "Falta la variable de entorno GEMINI_API_KEY. Añádela como 'secret' en GitHub."
         )
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
@@ -103,42 +130,65 @@ def llamar_gemini(prompt: str) -> str:
 
     r = requests.post(url, headers=headers, json=payload, timeout=120)
     if r.status_code != 200:
-        sys.exit(
-            f"Error {r.status_code} llamando a Gemini (modelo '{GEMINI_MODEL}'):\n"
-            f"{r.text[:800]}\n\n"
-            "Si el error menciona el modelo, comprueba el nombre actual en "
-            "https://ai.google.dev/gemini-api/docs/models y actualiza el secret "
-            "GEMINI_MODEL en GitHub."
+        raise RuntimeError(
+            f"Error {r.status_code} llamando a Gemini (modelo '{GEMINI_MODEL}'): "
+            f"{r.text[:500]} — comprueba el nombre del modelo en "
+            "https://ai.google.dev/gemini-api/docs/models si el error lo menciona."
         )
 
     data = r.json()
     try:
         return data["candidates"][0]["content"]["parts"][0]["text"]
     except (KeyError, IndexError):
-        sys.exit(f"Respuesta inesperada de Gemini: {data}")
+        raise RuntimeError(f"Respuesta inesperada de Gemini: {data}")
 
 
-def generar_mas_temas(temas_existentes, cuantos: int = 8):
-    """Pide a la IA nuevos títulos de artículo cuando temas.csv se queda sin pendientes,
-    para que la cola de contenido nunca se agote sin intervención humana."""
+def construir_prompt_articulo(cfg, titulo: str, palabra_clave: str) -> str:
+    return f"""Actúa como redactor experto y honesto para {cfg['site_name']}.
+
+Escribe un artículo completo en {cfg['idioma_humano']} sobre: "{titulo}"
+Palabra clave objetivo: "{palabra_clave}"
+
+Requisitos:
+- Entre 900 y 1300 palabras.
+- Tono claro y cercano, sin relleno genérico ni frases vacías.
+- Aporta ejemplos o cifras concretas SOLO si son razonables y generales; si no estás
+  seguro de un dato, exprésalo en términos generales en vez de inventarlo.
+- Estructura en Markdown: un H1 al principio, varios H2/H3, listas cuando ayuden,
+  y una conclusión práctica.
+- Si el tema toca dinero, salud o decisiones legales, incluye un aviso breve de que
+  es información general y no asesoramiento profesional individualizado.
+- Si el tema incluye algo específico de un país o región (mecanismos regulatorios,
+  programas concretos de ayuda, etc.), acláralo explícitamente en vez de darlo por
+  universal para cualquier lector.
+- No repitas el título tal cual dentro del cuerpo como si fuera un H2.
+- Escribe TODO el artículo (título, cuerpo, avisos) en {cfg['idioma_humano']}; no
+  mezcles idiomas.
+
+Devuelve SOLO el Markdown del artículo, sin explicaciones antes ni después."""
+
+
+def construir_prompt_temas(cfg, temas_existentes, cuantos: int = 8) -> str:
     titulos_existentes = "\n".join(f"- {t['titulo']}" for t in temas_existentes) or "(ninguno todavía)"
-
-    prompt = f"""Eres un estratega de contenidos SEO para una web sobre: {SITE_NICHE}.
+    return f"""Eres un estratega de contenidos SEO para una web sobre: {cfg['site_niche']}.
 
 Ya existen estos artículos (no los repitas ni propongas variaciones casi idénticas):
 {titulos_existentes}
 
-Propón {cuantos} títulos de artículo NUEVOS, evergreen, en español, con intención de
-búsqueda real. Evita títulos que dependan de precios o cifras que cambian a menudo
-(por ejemplo, evita "mejor tarifa en [mes/año]"); prioriza guías, comparativas de
-conceptos y consejos prácticos que sigan siendo válidos con el tiempo.
+Propón {cuantos} títulos de artículo NUEVOS, evergreen, en {cfg['idioma_humano']}, con
+intención de búsqueda real. Evita títulos que dependan de precios o cifras que cambian
+a menudo; prioriza guías, comparativas de conceptos y consejos prácticos que sigan
+siendo válidos con el tiempo. Prefiere ángulos concretos y específicos (un aparato, una
+comparación puntual) antes que titulares genéricos y muy competidos.
 
 Devuelve SOLO {cuantos} líneas, una por artículo, exactamente en este formato:
 titulo|palabra_clave
 
 Sin numeración, sin explicaciones antes ni después, sin nada más."""
 
-    respuesta = llamar_gemini(prompt)
+
+def generar_mas_temas(cfg, temas_existentes, cuantos: int = 8):
+    respuesta = llamar_gemini(construir_prompt_temas(cfg, temas_existentes, cuantos))
     nuevos = []
     for linea in respuesta.strip().splitlines():
         linea = linea.strip().lstrip("-").strip()
@@ -152,6 +202,100 @@ Sin numeración, sin explicaciones antes ni después, sin nada más."""
     return nuevos
 
 
+def buscar_imagen(query: str):
+    """Busca una foto libre de derechos en Pexels para ilustrar el artículo.
+    Si no hay PEXELS_API_KEY configurada, o la búsqueda falla por lo que sea,
+    devuelve None y el artículo se genera igual, solo que sin imagen —
+    nunca bloquea la generación por esto."""
+    if not PEXELS_API_KEY:
+        return None
+    try:
+        r = requests.get(
+            "https://api.pexels.com/v1/search",
+            headers={"Authorization": PEXELS_API_KEY},
+            params={"query": query, "per_page": 1, "orientation": "landscape"},
+            timeout=20,
+        )
+        if r.status_code != 200:
+            return None
+        fotos = r.json().get("photos") or []
+        if not fotos:
+            return None
+        foto = fotos[0]
+        return {
+            "url": foto["src"]["large"],
+            "alt": (foto.get("alt") or query).replace('"', "'"),
+            "fotografo": foto["photographer"],
+            "fotografo_url": foto["photographer_url"],
+            "pagina": foto["url"],
+        }
+    except requests.RequestException:
+        return None
+
+
+def construir_figura(imagen: dict) -> str:
+    return (
+        f'<figure class="post-hero-image">\n'
+        f'  <img src="{imagen["url"]}" alt="{imagen["alt"]}">\n'
+        f'  <figcaption>Foto: <a href="{imagen["fotografo_url"]}">{imagen["fotografo"]}</a>'
+        f' en <a href="{imagen["pagina"]}">Pexels</a></figcaption>\n'
+        f"</figure>\n\n"
+    )
+
+
+def procesar_idioma(codigo: str, cfg: dict):
+    """Genera un artículo para un idioma. Devuelve (ruta, titulo)."""
+    temas = leer_temas(cfg["temas_csv"])
+    pendiente = next(
+        (t for t in temas if t.get("estado", "").strip().lower() == "pendiente"), None
+    )
+
+    if not pendiente:
+        print(f"[{codigo}] No quedan temas pendientes: pidiendo ideas nuevas a la IA...")
+        nuevos = generar_mas_temas(cfg, temas)
+        if not nuevos:
+            raise RuntimeError("no se pudieron generar temas nuevos")
+        temas.extend(nuevos)
+        guardar_temas(cfg["temas_csv"], temas)
+        pendiente = nuevos[0]
+        print(f"[{codigo}] Se han añadido {len(nuevos)} temas nuevos.")
+
+    titulo = pendiente["titulo"].strip()
+    palabra_clave = pendiente.get("palabra_clave", "").strip()
+
+    print(f"[{codigo}] Generando artículo para: {titulo}")
+    contenido = llamar_gemini(construir_prompt_articulo(cfg, titulo, palabra_clave))
+
+    hoy = datetime.date.today().isoformat()
+    slug = slugify(titulo) or "articulo"
+    ruta = os.path.join(cfg["posts_dir"], f"{hoy}-{slug}.md")
+
+    categoria_slug, categoria_icono = categorizar(titulo, palabra_clave)
+    titulo_yaml = titulo.replace('"', "'")
+    front_matter = (
+        "---\n"
+        "layout: post\n"
+        f'title: "{titulo_yaml}"\n'
+        f"date: {hoy} 09:00:00 +0200\n"
+        f"categories: [{categoria_slug}]\n"
+        f"icon: {categoria_icono}\n"
+        "---\n\n"
+    )
+
+    imagen = buscar_imagen(IMAGEN_QUERIES.get(categoria_slug, "home energy"))
+    figura = construir_figura(imagen) if imagen else ""
+
+    os.makedirs(cfg["posts_dir"], exist_ok=True)
+    with open(ruta, "w", encoding="utf-8") as f:
+        f.write(front_matter + figura + contenido.strip() + "\n")
+
+    pendiente["estado"] = "borrador-generado"
+    guardar_temas(cfg["temas_csv"], temas)
+
+    print(f"[{codigo}] Artículo generado en: {ruta}")
+    return ruta, titulo
+
+
 def escribir_salida_github(nombre: str, valor: str):
     ruta_salida = os.environ.get("GITHUB_OUTPUT")
     if not ruta_salida:
@@ -162,52 +306,28 @@ def escribir_salida_github(nombre: str, valor: str):
 
 
 def main():
-    temas = leer_temas()
-    pendiente = next(
-        (t for t in temas if t.get("estado", "").strip().lower() == "pendiente"), None
-    )
+    resultados = []
+    errores = []
 
-    if not pendiente:
-        print("No quedan temas pendientes: pidiendo ideas nuevas a la IA...")
-        nuevos = generar_mas_temas(temas)
-        if not nuevos:
-            print("No se pudieron generar temas nuevos. Revisa temas.csv manualmente.")
-            return
-        temas.extend(nuevos)
-        guardar_temas(temas)
-        pendiente = nuevos[0]
-        print(f"Se han añadido {len(nuevos)} temas nuevos a temas.csv.")
+    for codigo, cfg in IDIOMAS.items():
+        try:
+            ruta, titulo = procesar_idioma(codigo, cfg)
+            resultados.append((codigo, ruta, titulo))
+        except Exception as e:
+            print(f"[{codigo}] ERROR: {e}")
+            errores.append((codigo, str(e)))
 
-    titulo = pendiente["titulo"].strip()
-    palabra_clave = pendiente.get("palabra_clave", "").strip()
+    if not resultados:
+        print("No se ha generado ningún artículo en ningún idioma.")
+        sys.exit(1)
 
-    print(f"Generando artículo para: {titulo}")
-    contenido = llamar_gemini(construir_prompt(titulo, palabra_clave))
+    resumen = " | ".join(f"{c.upper()}: {t}" for c, _, t in resultados)
+    if errores:
+        resumen += " | Fallos: " + ", ".join(f"{c.upper()} ({m})" for c, m in errores)
 
-    hoy = datetime.date.today().isoformat()
-    slug = slugify(titulo) or "articulo"
-    ruta = os.path.join(POSTS_DIR, f"{hoy}-{slug}.md")
-
-    titulo_yaml = titulo.replace('"', "'")
-    front_matter = (
-        "---\n"
-        "layout: post\n"
-        f'title: "{titulo_yaml}"\n'
-        f"date: {hoy} 09:00:00 +0200\n"
-        "categories: [articulos]\n"
-        "---\n\n"
-    )
-
-    os.makedirs(POSTS_DIR, exist_ok=True)
-    with open(ruta, "w", encoding="utf-8") as f:
-        f.write(front_matter + contenido.strip() + "\n")
-
-    pendiente["estado"] = "borrador-generado"
-    guardar_temas(temas)
-
-    print(f"Artículo generado en: {ruta}")
-    escribir_salida_github("ruta", ruta)
-    escribir_salida_github("titulo", titulo)
+    escribir_salida_github("resumen", resumen)
+    escribir_salida_github("hubo_contenido", "si")
+    print("Resumen:", resumen)
 
 
 if __name__ == "__main__":

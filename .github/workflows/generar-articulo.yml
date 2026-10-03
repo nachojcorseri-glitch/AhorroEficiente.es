@@ -1,0 +1,59 @@
+name: Generar artículo automático
+
+"on":
+  schedule:
+    # Lunes y jueves a las 07:00 UTC. Cambia la expresión cron si quieres otro ritmo.
+    - cron: "0 7 * * 1,4"
+  workflow_dispatch: {}   # te deja lanzarlo a mano desde la pestaña "Actions"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Generar artículo con IA
+        id: generar
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          SITE_NAME_ES: ${{ secrets.SITE_NAME_ES }}
+          SITE_NICHE_ES: ${{ secrets.SITE_NICHE_ES }}
+          SITE_NAME_EN: ${{ secrets.SITE_NAME_EN }}
+          SITE_NICHE_EN: ${{ secrets.SITE_NICHE_EN }}
+        run: python generar_articulo.py
+
+      - name: Abrir Pull Request para revisión
+        if: steps.generar.outputs.hubo_contenido == 'si'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Nuevos borradores: ${{ steps.generar.outputs.resumen }}"
+          title: "Nuevos artículos generados: ${{ steps.generar.outputs.resumen }}"
+          body: |
+            Artículos generados automáticamente con IA (español e inglés) a partir de
+            temas_es.csv / temas_en.csv.
+
+            Antes de fusionar (Merge):
+            - Léelos por encima (5-10 min cada uno).
+            - Corrige cualquier dato que suene inventado o genérico.
+            - Si te convencen, pulsa **Merge pull request** y quedarán publicados.
+          branch: "articulo-automatico/${{ github.run_number }}"
+          add-paths: |
+            _posts/*
+            _posts_en/*
+            temas_es.csv
+            temas_en.csv

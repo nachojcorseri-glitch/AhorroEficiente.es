@@ -31,7 +31,7 @@ permalink: /en/calculator/
 
   <div class="calc-field">
     <label for="calc-horas">Hours used per day</label>
-    <input type="number" id="calc-horas" min="0" step="0.25" value="2">
+    <input type="number" id="calc-horas" min="0" max="24" step="0.25" value="2">
   </div>
 
   <div class="calc-field">
@@ -60,9 +60,10 @@ permalink: /en/calculator/
   var outMes = document.getElementById('calc-mes');
   var outAnio = document.getElementById('calc-anio');
 
-  function clamp(n) {
+  function clamp(n, max) {
     n = parseFloat(n);
     if (isNaN(n) || n < 0) return 0;
+    if (typeof max === 'number' && n > max) return max;
     return n;
   }
 
@@ -72,7 +73,7 @@ permalink: /en/calculator/
 
   function recalcular() {
     var vatios = sel.value === 'custom' ? clamp(customInput.value) : clamp(sel.value);
-    var h = clamp(horas.value);
+    var h = clamp(horas.value, 24);
     var p = clamp(precio.value);
 
     var kwhDia = (vatios / 1000) * h;

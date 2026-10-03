@@ -1,4 +1,5 @@
-# Web que se escribe sola — kit inicial (gratis)
+# Web que se escribe sola 
+
 
 Este proyecto es una web de contenido (Jekyll) que se aloja gratis en GitHub Pages y que,
 cada pocos días, genera un artículo nuevo con IA (API gratuita de Gemini) y te lo deja

@@ -6,6 +6,8 @@ _posts/ y _posts_en/ listos para revisar. Un fallo en un idioma no bloquea al ot
 Variables de entorno:
   GEMINI_API_KEY   (obligatoria) tu clave gratuita de https://aistudio.google.com/
   GEMINI_MODEL     (opcional) por defecto "gemini-3.1-flash-lite".
+  PEXELS_API_KEY   (opcional) tu clave gratuita de https://www.pexels.com/api/ —
+                    sin ella, los artículos se generan igual, solo que sin imagen.
   SITE_NAME_ES / SITE_NICHE_ES   (opcionales) contexto para el lado español.
   SITE_NAME_EN / SITE_NICHE_EN   (opcionales) contexto para el lado inglés.
 
@@ -32,6 +34,15 @@ def _opcional(nombre_var: str, valor_por_defecto: str) -> str:
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 GEMINI_MODEL = _opcional("GEMINI_MODEL", "gemini-3.1-flash-lite")
+PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY")  # opcional: sin ella, sin imagen, sin fallo
+
+IMAGEN_QUERIES = {
+    "tarifas": "electricity meter",
+    "electrodomesticos": "home appliances",
+    "solar": "solar panels house",
+    "domotica": "smart home",
+    "ahorro": "energy saving light bulb",
+}
 
 IDIOMAS = {
     "es": {
@@ -191,6 +202,47 @@ def generar_mas_temas(cfg, temas_existentes, cuantos: int = 8):
     return nuevos
 
 
+def buscar_imagen(query: str):
+    """Busca una foto libre de derechos en Pexels para ilustrar el artículo.
+    Si no hay PEXELS_API_KEY configurada, o la búsqueda falla por lo que sea,
+    devuelve None y el artículo se genera igual, solo que sin imagen —
+    nunca bloquea la generación por esto."""
+    if not PEXELS_API_KEY:
+        return None
+    try:
+        r = requests.get(
+            "https://api.pexels.com/v1/search",
+            headers={"Authorization": PEXELS_API_KEY},
+            params={"query": query, "per_page": 1, "orientation": "landscape"},
+            timeout=20,
+        )
+        if r.status_code != 200:
+            return None
+        fotos = r.json().get("photos") or []
+        if not fotos:
+            return None
+        foto = fotos[0]
+        return {
+            "url": foto["src"]["large"],
+            "alt": (foto.get("alt") or query).replace('"', "'"),
+            "fotografo": foto["photographer"],
+            "fotografo_url": foto["photographer_url"],
+            "pagina": foto["url"],
+        }
+    except requests.RequestException:
+        return None
+
+
+def construir_figura(imagen: dict) -> str:
+    return (
+        f'<figure class="post-hero-image">\n'
+        f'  <img src="{imagen["url"]}" alt="{imagen["alt"]}">\n'
+        f'  <figcaption>Foto: <a href="{imagen["fotografo_url"]}">{imagen["fotografo"]}</a>'
+        f' en <a href="{imagen["pagina"]}">Pexels</a></figcaption>\n'
+        f"</figure>\n\n"
+    )
+
+
 def procesar_idioma(codigo: str, cfg: dict):
     """Genera un artículo para un idioma. Devuelve (ruta, titulo)."""
     temas = leer_temas(cfg["temas_csv"])
@@ -230,9 +282,12 @@ def procesar_idioma(codigo: str, cfg: dict):
         "---\n\n"
     )
 
+    imagen = buscar_imagen(IMAGEN_QUERIES.get(categoria_slug, "home energy"))
+    figura = construir_figura(imagen) if imagen else ""
+
     os.makedirs(cfg["posts_dir"], exist_ok=True)
     with open(ruta, "w", encoding="utf-8") as f:
-        f.write(front_matter + contenido.strip() + "\n")
+        f.write(front_matter + figura + contenido.strip() + "\n")
 
     pendiente["estado"] = "borrador-generado"
     guardar_temas(cfg["temas_csv"], temas)

@@ -20,6 +20,14 @@ permalink: /en/
   <span class="topic-badge">{% include icon.html name="bulb" %}Smart Home</span>
 </div>
 
+<div class="calc-cta">
+  {% include icon.html name="gauge" %}
+  <div class="calc-cta-text">
+    <strong>How much does your fridge, AC, or any appliance really cost to run?</strong>
+    <a class="button" href="/en/calculator/">Try the calculator →</a>
+  </div>
+</div>
+
 <h2 class="section-title">Latest articles</h2>
 <ul class="post-list">
 {% assign sorted_posts = site.posts_en | sort: 'date' | reverse %}

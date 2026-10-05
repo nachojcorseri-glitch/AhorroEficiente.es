@@ -6,8 +6,6 @@ _posts/ y _posts_en/ listos para revisar. Un fallo en un idioma no bloquea al ot
 Variables de entorno:
   GEMINI_API_KEY   (obligatoria) tu clave gratuita de https://aistudio.google.com/
   GEMINI_MODEL     (opcional) por defecto "gemini-3.1-flash-lite".
-  PEXELS_API_KEY   (opcional) tu clave gratuita de https://www.pexels.com/api/ —
-                    sin ella, los artículos se generan igual, solo que sin imagen.
   SITE_NAME_ES / SITE_NICHE_ES   (opcionales) contexto para el lado español.
   SITE_NAME_EN / SITE_NICHE_EN   (opcionales) contexto para el lado inglés.
 
@@ -34,7 +32,7 @@ def _opcional(nombre_var: str, valor_por_defecto: str) -> str:
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 GEMINI_MODEL = _opcional("GEMINI_MODEL", "gemini-3.1-flash-lite")
-PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY")  # opcional: sin ella, sin imagen, sin fallo
+PIXABAY_API_KEY = os.environ.get("PIXABAY_API_KEY")  # opcional: sin ella, sin imagen, sin fallo
 
 IMAGEN_QUERIES = {
     "tarifas": "electricity meter",
@@ -203,31 +201,40 @@ def generar_mas_temas(cfg, temas_existentes, cuantos: int = 8):
 
 
 def buscar_imagen(query: str):
-    """Busca una foto libre de derechos en Pexels para ilustrar el artículo.
-    Si no hay PEXELS_API_KEY configurada, o la búsqueda falla por lo que sea,
+    """Busca una foto libre de derechos en Pixabay para ilustrar el artículo.
+    Si no hay PIXABAY_API_KEY configurada, o la búsqueda falla por lo que sea,
     devuelve None y el artículo se genera igual, solo que sin imagen —
     nunca bloquea la generación por esto."""
-    if not PEXELS_API_KEY:
+    if not PIXABAY_API_KEY:
         return None
     try:
         r = requests.get(
-            "https://api.pexels.com/v1/search",
-            headers={"Authorization": PEXELS_API_KEY},
-            params={"query": query, "per_page": 1, "orientation": "landscape"},
+            "https://pixabay.com/api/",
+            params={
+                "key": PIXABAY_API_KEY,
+                "q": query,
+                "image_type": "photo",
+                "orientation": "horizontal",
+                "safesearch": "true",
+                "per_page": 3,
+            },
             timeout=20,
         )
         if r.status_code != 200:
             return None
-        fotos = r.json().get("photos") or []
-        if not fotos:
+        hits = r.json().get("hits") or []
+        if not hits:
             return None
-        foto = fotos[0]
+        foto = hits[0]
+        usuario = foto.get("user", "Pixabay")
+        user_id = foto.get("user_id")
+        perfil = f"https://pixabay.com/users/{usuario}-{user_id}/" if user_id else "https://pixabay.com/"
         return {
-            "url": foto["src"]["large"],
-            "alt": (foto.get("alt") or query).replace('"', "'"),
-            "fotografo": foto["photographer"],
-            "fotografo_url": foto["photographer_url"],
-            "pagina": foto["url"],
+            "url": foto.get("largeImageURL") or foto.get("webformatURL"),
+            "alt": query,
+            "fotografo": usuario,
+            "fotografo_url": perfil,
+            "pagina": foto.get("pageURL", "https://pixabay.com/"),
         }
     except requests.RequestException:
         return None

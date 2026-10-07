@@ -218,7 +218,6 @@ $card-shadow-hover:  0 6px 18px rgba(27, 122, 77, 0.12);
   padding-bottom: 10px;
 }
 
-
 // --- Calculadora interactiva ---
 
 .calc-card {
@@ -332,7 +331,6 @@ $card-shadow-hover:  0 6px 18px rgba(27, 122, 77, 0.12);
   font-size: 14px;
 }
 
-
 // --- Imagen de cabecera de cada artículo (Pexels) ---
 
 .post-hero-image {
@@ -354,3 +352,21 @@ $card-shadow-hover:  0 6px 18px rgba(27, 122, 77, 0.12);
 .post-hero-image figcaption a {
   color: $grey-color;
 }
+
+// --- Calculadora solar: checkbox y resultado a 2 columnas ---
+
+.calc-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.calc-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.calc-result-solar > div { flex: 1; }
+.calc-result-solar strong { font-size: 17px; }

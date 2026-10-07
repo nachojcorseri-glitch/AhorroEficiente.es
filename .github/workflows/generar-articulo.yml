@@ -30,7 +30,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
-          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           SITE_NAME_ES: ${{ secrets.SITE_NAME_ES }}
           SITE_NICHE_ES: ${{ secrets.SITE_NICHE_ES }}
           SITE_NAME_EN: ${{ secrets.SITE_NAME_EN }}

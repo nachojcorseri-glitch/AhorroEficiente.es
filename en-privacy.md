@@ -6,35 +6,74 @@ permalink: /en/privacy/
 
 [Versión en español](/privacidad/)
 
-*This covers the basics for a site that's just getting started. If the business grows,
-it's worth having it reviewed by a professional.*
+*A reinforced starting template: it covers the standard elements of a serious privacy
+policy, but it is not a substitute for a real legal review once the site is earning
+money. This is not legal advice.*
 
 **Last updated:** September 30, 2026
 
-**Site owner:** Ignacio — you can reach me at nachojimenezcor@gmail.com
+**Data controller:** Ignacio — contact: nachojimenezcor@gmail.com
 
-## What data is collected
+## 1. What data is collected, and why
 
-This site may use cookies and similar technology to:
+- **Visit analytics** (if enabled): pages viewed, time on site, traffic source, and
+  technical device data, used to understand and improve the site.
+- **Personalized advertising**: this site shows ads through **Google AdSense**. Google
+  and its advertising partners may use cookies and device identifiers to show ads
+  based on your visits to this and other sites.
+- **Third-party images**: articles may include photos served directly from
+  **Pixabay**; when the page loads, your browser makes a direct request to their
+  servers (as happens with virtually any external image library), which lets them see
+  your IP address.
 
-- Measure traffic and browsing behavior (for example, with Google Analytics).
-- Show personalized ads through **Google AdSense** and its advertising partners, who
-  may use cookies to show ads based on your visits to this and other sites.
+## 2. Legal basis
 
-## Your choice
+Non-essential cookies (analytics, advertising) are only activated with your
+**consent**, which you can give or decline in the cookie notice when you enter the
+site, and withdraw at any time by clearing your browser's cookies.
 
-When you enter the site you can accept or decline non-essential cookies from the
-cookie notice. You can change your choice at any time by clearing your browser's
-cookies.
+## 3. International transfers
 
-Google explains how it uses data when you use its partners' sites or apps here:
-https://policies.google.com/technologies/partner-sites
+Google and Pixabay are US-based companies. When their services process your data,
+they do so under applicable international transfer safeguards (such as the EU-US Data
+Privacy Framework or standard contractual clauses). You can read how Google uses this
+data here: https://policies.google.com/technologies/partner-sites
 
-## Your rights (GDPR / applicable privacy law)
+## 4. How long data is kept
 
-Depending on where you live, you may have the right to access, correct, or delete
-your data, and to object to its processing, by writing to nachojimenezcor@gmail.com.
+Analytics and advertising cookies are kept for whatever period each provider (Google,
+Pixabay) states in its own policies — typically a few months to a couple of years —
+unless you clear them yourself first.
 
-## Contact
+## 5. Your rights
 
-For any question about this policy: nachojimenezcor@gmail.com.
+If you live in the EU (GDPR), you have the right to:
+
+- Access, correct, or request deletion of your data.
+- Object to processing or request its restriction.
+- Data portability.
+- Withdraw consent at any time, without affecting the lawfulness of prior processing.
+
+To exercise any of these rights, write to nachojimenezcor@gmail.com.
+
+If you believe your data hasn't been handled correctly, you can file a complaint with
+the **Spanish Data Protection Agency (AEPD)** (www.aepd.es) or your own country's data
+protection authority if you live elsewhere in the EU.
+
+If you're visiting from outside the EU (for example, from the US), you may have
+additional rights under your state or country's law (such as CCPA/CPRA in
+California); contact the same email for any request.
+
+## 6. Children
+
+This site is not directed at children under 16 and does not knowingly collect data
+from children.
+
+## 7. Changes to this policy
+
+This policy may be updated to reflect legal or site changes. The "Last updated" date
+above indicates the current version.
+
+## 8. Contact
+
+For any question about this policy or your data: nachojimenezcor@gmail.com.

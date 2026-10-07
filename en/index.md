@@ -14,10 +14,10 @@ permalink: /en/
 </section>
 
 <div class="topics">
-  <span class="topic-badge">{% include icon.html name="gauge" %}Bills &amp; Rates</span>
-  <span class="topic-badge">{% include icon.html name="plug" %}Appliances</span>
-  <span class="topic-badge">{% include icon.html name="sun" %}Solar</span>
-  <span class="topic-badge">{% include icon.html name="bulb" %}Smart Home</span>
+  <a class="topic-badge" href="/en/category/bills-rates/">{% include icon.html name="gauge" %}Bills &amp; Rates</a>
+  <a class="topic-badge" href="/en/category/appliances/">{% include icon.html name="plug" %}Appliances</a>
+  <a class="topic-badge" href="/en/category/solar/">{% include icon.html name="sun" %}Solar</a>
+  <a class="topic-badge" href="/en/category/smart-home/">{% include icon.html name="bulb" %}Smart Home</a>
 </div>
 
 <div class="calc-cta">

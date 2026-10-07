@@ -1,8 +1,6 @@
 ---
 layout: page
 title: Inicio
----
-
 <section class="hero">
   <div class="hero-text">
     <h1>Ahorra en tu factura sin complicarte</h1>
@@ -11,14 +9,12 @@ title: Inicio
   </div>
   <div class="hero-icon">{% include icon.html name="house" %}</div>
 </section>
-
 <div class="topics">
-  <span class="topic-badge">{% include icon.html name="gauge" %}Tarifas y factura</span>
-  <span class="topic-badge">{% include icon.html name="plug" %}Electrodomésticos</span>
-  <span class="topic-badge">{% include icon.html name="sun" %}Energía solar</span>
-  <span class="topic-badge">{% include icon.html name="bulb" %}Domótica</span>
+  <a class="topic-badge" href="/categoria/tarifas/">{% include icon.html name="gauge" %}Tarifas y factura</a>
+  <a class="topic-badge" href="/categoria/electrodomesticos/">{% include icon.html name="plug" %}Electrodomésticos</a>
+  <a class="topic-badge" href="/categoria/solar/">{% include icon.html name="sun" %}Energía solar</a>
+  <a class="topic-badge" href="/categoria/domotica/">{% include icon.html name="bulb" %}Domótica</a>
 </div>
-
 <div class="calc-cta">
   {% include icon.html name="gauge" %}
   <div class="calc-cta-text">
@@ -26,7 +22,6 @@ title: Inicio
     <a class="button" href="/calculadora/">Pruébalo en la calculadora →</a>
   </div>
 </div>
-
 <h2 class="section-title">Últimos artículos</h2>
 <ul class="post-list">
 {% assign sorted_posts = site.posts | sort: 'date' | reverse %}

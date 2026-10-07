@@ -49,6 +49,8 @@ permalink: /calculadora/
   <p class="calc-hint">Los vatios de la lista son valores típicos orientativos: el consumo real de tu modelo concreto puede variar bastante. Para el dato exacto, mira la etiqueta energética o el manual del aparato.</p>
 </div>
 
+<p class="calc-hint">¿Estás pensando en placas solares? Prueba también la <a href="/calculadora-solar/">calculadora de instalación solar</a>.</p>
+
 <script>
 (function () {
   var sel = document.getElementById('calc-aparato');
@@ -95,3 +97,4 @@ permalink: /calculadora/
   recalcular();
 })();
 </script>
+

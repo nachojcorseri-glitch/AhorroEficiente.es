@@ -49,6 +49,8 @@ permalink: /en/calculator/
   <p class="calc-hint">The wattages in the list are typical, approximate figures — your exact model may use more or less. Check the energy label or manual for the precise number.</p>
 </div>
 
+<p class="calc-hint">Thinking about going solar? Try the <a href="/en/solar-calculator/">solar installation cost calculator</a> too.</p>
+
 <script>
 (function () {
   var sel = document.getElementById('calc-aparato');

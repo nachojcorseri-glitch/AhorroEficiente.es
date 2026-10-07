@@ -6,6 +6,8 @@ _posts/ y _posts_en/ listos para revisar. Un fallo en un idioma no bloquea al ot
 Variables de entorno:
   GEMINI_API_KEY   (obligatoria) tu clave gratuita de https://aistudio.google.com/
   GEMINI_MODEL     (opcional) por defecto "gemini-3.1-flash-lite".
+  PIXABAY_API_KEY  (opcional) tu clave gratuita de https://pixabay.com/api/ —
+                    sin ella, los artículos se generan igual, solo que sin imagen.
   SITE_NAME_ES / SITE_NICHE_ES   (opcionales) contexto para el lado español.
   SITE_NAME_EN / SITE_NICHE_EN   (opcionales) contexto para el lado inglés.
 
@@ -245,7 +247,7 @@ def construir_figura(imagen: dict) -> str:
         f'<figure class="post-hero-image">\n'
         f'  <img src="{imagen["url"]}" alt="{imagen["alt"]}">\n'
         f'  <figcaption>Foto: <a href="{imagen["fotografo_url"]}">{imagen["fotografo"]}</a>'
-        f' en <a href="{imagen["pagina"]}">Pexels</a></figcaption>\n'
+        f' en <a href="{imagen["pagina"]}">Pixabay</a></figcaption>\n'
         f"</figure>\n\n"
     )
 

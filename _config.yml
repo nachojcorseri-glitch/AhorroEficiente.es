@@ -27,3 +27,6 @@ exclude:
 author: "Ignacio"
 # twitter_username: tuusuario
 # github_username:  tuusuario
+
+# Estadísticas de visitas (Cloudflare Web Analytics). Pega aquí tu token.
+cloudflare_analytics_token: "1c2f14865e0449b8b09226ec1e0cd650"
